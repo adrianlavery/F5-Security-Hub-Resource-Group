@@ -2,5 +2,38 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "vnetName": {
+      "value": "HubVNet"
+    },
+    "vnetPrefix": {
+      "value": "10.0.0.0/24"
+    },
+    "gatewaySubnetPrefix": {
+      "value": "10.0.0.0/26"
+    },
+    "shrdSvcSubnetName": {
+      "value": "SharedServicesSubnet"
+    },
+    "shrdSvcSubnetPrefix": {
+      "value": "10.0.0.64/26"
+    },
+    "extSubnetName": {
+      "value": "ExternalSubnet"
+    },
+    "extSubnetPrefix": {
+      "value": "10.0.0.128/26"
+    },
+    "intSubnetName": {
+      "value": "InternalSubnet"
+    },
+    "intSubnetPrefix": {
+      "value": "10.0.0.192/27"
+    },
+    "mgmtSubnetName": {
+      "value": "ManagementSubnet"
+    },
+    "mgmtSubnetPrefix": {
+      "value": "10.0.0.224/27"
+    }
   }
-}
+  }

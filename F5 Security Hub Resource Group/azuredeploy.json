@@ -1,8 +1,136 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {},
-  "variables": {},
-  "resources": [],
+  "parameters": {
+    "vnetName": {
+      "defaultValue": "HubVNet",
+      "metadata": {
+        "description": "Name of the hub VNet."
+      },
+      "type": "string"
+    },
+    "vnetPrefix": {
+      "defaultValue": "10.0.0.0/24",
+      "metadata": {
+        "description": "CIDR for the hub VNET."
+      },
+      "type": "string"
+    },
+    "gatewaySubnetPrefix": {
+      "defaultValue": "10.0.0.0/26",
+      "metadata": {
+        "description": "CIDR for the Gateway Subnet."
+      },
+      "type": "string"
+    },
+    "shrdSvcSubnetName": {
+      "defaultValue": "SharedServicesSubnet",
+      "metadata": {
+        "description": "Name of the shared services subnet."
+      },
+      "type": "string"
+    },
+    "shrdSvcSubnetPrefix": {
+      "defaultValue": "10.0.0.64/26",
+      "metadata": {
+        "description": "CIDR for the shared services subnet."
+      },
+      "type": "string"
+    },
+    "extSubnetName": {
+      "defaultValue": "ExternalSubnet",
+      "metadata": {
+        "description": "Name of the external facing subnet."
+      },
+      "type": "string"
+    },
+    "extSubnetPrefix": {
+      "defaultValue": "10.0.0.128/26",
+      "metadata": {
+        "description": "CIDR for the external facing subnet."
+      },
+      "type": "string"
+    },
+    "intSubnetName": {
+      "defaultValue": "InternalSubnet",
+      "metadata": {
+        "description": "Name of the internal facing subnet."
+      },
+      "type": "string"
+    },
+    "intSubnetPrefix": {
+      "defaultValue": "10.0.0.192/27",
+      "metadata": {
+        "description": "CIDR for the internal facing subnet."
+      },
+      "type": "string"
+    },
+    "mgmtSubnetName": {
+      "defaultValue": "ManagementSubnet",
+      "metadata": {
+        "description": "Name of the management subnet."
+      },
+      "type": "string"
+    },
+    "mgmtSubnetPrefix": {
+      "defaultValue": "10.0.0.224/27",
+      "metadata": {
+        "description": "CIDR for the management subnet."
+      },
+      "type": "string"
+    }
+  },
+  "variables": {
+    },
+  "resources": [
+    {
+      "name": "[parameters('vnetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-03-30",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "Hub Vnet"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnetPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "GatewaySubnet",
+            "properties": {
+              "addressPrefix": "[parameters('gatewaySubnetPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('ShrdSvcSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('shrdSvcSubnetPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('extSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('extSubnetPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('intSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('intSubnetPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('mgmtSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('mgmtSubnetPrefix')]"
+            }
+          }
+        ]
+      }
+    }],
   "outputs": {}
 }
