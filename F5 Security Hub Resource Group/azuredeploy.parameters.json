@@ -46,6 +46,9 @@
     },
     "dnsLabelPrefix": {
       "value": "alf5testext"
+    },
+    "bigIpVersion": {
+      "value": "13.0.021"
     }
-    }
+  }
   }

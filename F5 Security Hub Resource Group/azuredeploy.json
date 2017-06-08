@@ -116,10 +116,29 @@
         "description": "Unique label used to prefix the resource display names"
       },
       "type": "string"
+    },
+    "bigIpVersion": {
+      "allowedValues": [
+        "latest",
+        "13.0.021",
+        "12.1.24"
+      ],
+      "defaultValue": "13.0.021",
+      "metadata": {
+        "description": "F5 BIG-IP version you want to use."
+      },
+      "type": "string"
+    },
+    "restrictedSrcAddress": {
+      "defaultValue": "*",
+      "metadata": {
+        "description": "This field restricts management access to a specific network or address. Enter an IP address or address range in CIDR notation, or asterisk for all sources"
+      },
+      "type": "string"
     }
   },
   "variables": {
-    //"apiVersion": "2015-06-15",
+    "apiVersion": "2016-03-30",
     //"computeApiVersion": "2015-06-15",
     "networkApiVersion": "2016-03-30",
     //"storageApiVersion": "2015-06-15",
@@ -132,7 +151,43 @@
     "numberOfExternalIps": "[add(parameters('numberOfExternalIps'), 1)]",
     "publicIPAddressNamePrefix": "[concat(variables('resourceLabel'), '-ext-pip')]",
     "publicIPAddressIdPrefix": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressNamePrefix'))]",
-    "dnsLabelPrefix": "[toLower(parameters('dnsLabelPrefix'))]"
+    "dnsLabelPrefix": "[toLower(parameters('dnsLabelPrefix'))]",
+    "bigIpNicPortMap": {
+      "1": {
+        "Port": "[parameters('bigIpVersion')]"
+      },
+      "2": {
+        "Port": "443"
+      },
+      "3": {
+        "Port": "443"
+      },
+      "4": {
+        "Port": "443"
+      },
+      "5": {
+        "Port": "443"
+      },
+      "6": {
+        "Port": "443"
+      }
+    },
+    "bigIpVersionPortMap": {
+      "12.1.24": {
+        "Port": 443
+      },
+      "13.0.021": {
+        "Port": 8443
+      },
+      "443": {
+        "Port": 443
+      },
+      "latest": {
+        "Port": 8443
+      }
+    },
+    "bigIpNicPortValue": "[variables('bigIpNicPortMap')['3'].Port]",
+    "bigIpMgmtPort": "[variables('bigIpVersionPortMap')[variables('bigIpNicPortValue')].Port]"
   },
   "resources": [
     {
@@ -169,6 +224,57 @@
       "tags": {
       },
       "type": "Microsoft.Network/publicIPAddresses"
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[variables('location')]",
+      "name": "[concat(variables('resourceLabel'), '-mgmt-nsg')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "mgmt_allow_https",
+            "properties": {
+              "access": "Allow",
+              "description": "",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "[variables('bigIpMgmtPort')]",
+              "direction": "Inbound",
+              "priority": 101,
+              "protocol": "TCP",
+              "sourceAddressPrefix": "[parameters('restrictedSrcAddress')]",
+              "sourcePortRange": "*"
+            }
+          },
+          {
+            "name": "ssh_allow_22",
+            "properties": {
+              "access": "Allow",
+              "description": "",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "22",
+              "direction": "Inbound",
+              "priority": 102,
+              "protocol": "TCP",
+              "sourceAddressPrefix": "[parameters('restrictedSrcAddress')]",
+              "sourcePortRange": "*"
+            }
+          }
+        ]
+      },
+      "tags": {
+      },
+      "type": "Microsoft.Network/networkSecurityGroups"
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[variables('location')]",
+      "name": "[concat(variables('resourceLabel'), '-ext-nsg')]",
+      "properties": {
+        "securityRules": ""
+      },
+      "tags": {
+      },
+      "type": "Microsoft.Network/networkSecurityGroups"
     },
     {
       "name": "[parameters('vnetName')]",
