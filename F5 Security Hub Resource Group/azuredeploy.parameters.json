@@ -34,6 +34,18 @@
     },
     "mgmtSubnetPrefix": {
       "value": "10.0.0.224/27"
+    },
+    "dnsLabel": {
+      "value": "alf5test"
+    },
+    "numberOfExternalIps": {
+      "value": 2
+    },
+    "resourceLabel": {
+      "value": "f5test"
+    },
+    "dnsLabelPrefix": {
+      "value": "alf5testext"
     }
-  }
+    }
   }

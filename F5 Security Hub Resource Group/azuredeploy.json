@@ -78,16 +78,103 @@
         "description": "CIDR for the management subnet."
       },
       "type": "string"
+    },
+    "dnsLabel": {
+      "defaultValue": "REQUIRED",
+      "metadata": {
+        "description": "Unique DNS Name for the Public IP address used to access the Virtual Machine"
+      },
+      "type": "string"
+    },
+    "numberOfExternalIps": {
+      "allowedValues": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "defaultValue": 1,
+      "metadata": {
+        "description": "The number of public/private IP addresses you want to deploy for the application traffic (external) NIC on the BIG-IP VE to be used for virtual servers."
+      },
+      "type": "int"
+    },
+    "dnsLabelPrefix": {
+      "defaultValue": "REQUIRED",
+      "metadata": {
+        "description": "Unique DNS Name prefix for the Public IP address(es) used to access the data plane for application traffic objects (such as virtual servers and pools)."
+      },
+      "type": "string"
+    },
+    "resourceLabel": {
+      "defaultValue": "REQUIRED",
+      "metadata": {
+        "description": "Unique label used to prefix the resource display names"
+      },
+      "type": "string"
     }
   },
   "variables": {
-    },
+    //"apiVersion": "2015-06-15",
+    //"computeApiVersion": "2015-06-15",
+    "networkApiVersion": "2016-03-30",
+    //"storageApiVersion": "2015-06-15",
+    "location": "[resourceGroup().location]",
+    "dnsLabel": "[toLower(parameters('dnsLabel'))]",
+    "resourceLabel": "[toLower(parameters('resourceLabel'))]",
+    "publicIPAddressName": "[concat(variables('resourceLabel'), '-mgmt-pip')]",
+    "publicIPAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]",
+    "publicIPAddressType": "Static",
+    "numberOfExternalIps": "[add(parameters('numberOfExternalIps'), 1)]",
+    "publicIPAddressNamePrefix": "[concat(variables('resourceLabel'), '-ext-pip')]",
+    "publicIPAddressIdPrefix": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressNamePrefix'))]",
+    "dnsLabelPrefix": "[toLower(parameters('dnsLabelPrefix'))]"
+  },
   "resources": [
+    {
+      "apiVersion": "[variables('networkApiVersion')]",
+      "location": "[variables('location')]",
+      "name": "[variables('publicIPAddressName')]",
+      "properties": {
+        "dnsSettings": {
+          "domainNameLabel": "[variables('dnsLabel')]"
+        },
+        "idleTimeoutInMinutes": 30,
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]"
+      },
+      "tags": {
+
+      },
+      "type": "Microsoft.Network/publicIPAddresses"
+    },
+    {
+      "apiVersion": "[variables('networkApiVersion')]",
+      "copy": {
+        "count": "[variables('numberOfExternalIps')]",
+        "name": "pipcopy"
+      },
+      "location": "[variables('location')]",
+      "name": "[concat(variables('publicIPAddressNamePrefix'), copyIndex(1))]",
+      "properties": {
+        "dnsSettings": {
+          "domainNameLabel": "[concat(variables('dnsLabelPrefix'), copyIndex(1))]"
+        },
+        "idleTimeoutInMinutes": 30,
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]"
+      },
+      "tags": {
+      },
+      "type": "Microsoft.Network/publicIPAddresses"
+    },
     {
       "name": "[parameters('vnetName')]",
       "type": "Microsoft.Network/virtualNetworks",
       "location": "[resourceGroup().location]",
-      "apiVersion": "2016-03-30",
+      "apiVersion": "[variables('networkApiVersion')]",
       "dependsOn": [],
       "tags": {
         "displayName": "Hub Vnet"
@@ -131,6 +218,7 @@
           }
         ]
       }
-    }],
+    }
+  ],
   "outputs": {}
 }
