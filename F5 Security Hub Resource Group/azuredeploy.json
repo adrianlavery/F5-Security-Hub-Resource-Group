@@ -117,6 +117,108 @@
       },
       "type": "string"
     },
+    "instanceName": {
+      "defaultValue": "f5vm01",
+      "metadata": {
+        "description": "Name of the Virtual Machine."
+      },
+      "type": "string"
+    },
+    "instanceType": {
+      "allowedValues": [
+        "Standard_A3",
+        "Standard_A4",
+        "Standard_A5",
+        "Standard_A6",
+        "Standard_A7",
+        "Standard_A8",
+        "Standard_A9",
+        "Standard_D3",
+        "Standard_D4",
+        "Standard_D11",
+        "Standard_D12",
+        "Standard_D13",
+        "Standard_D14",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D5_v2",
+        "Standard_D11_v2",
+        "Standard_D12_v2",
+        "Standard_D13_v2",
+        "Standard_D14_v2",
+        "Standard_D15_v2",
+        "Standard_F4",
+        "Standard_F8"
+      ],
+      "defaultValue": "Standard_D3_v2",
+      "metadata": {
+        "description": "Azure instance size of the Virtual Machine."
+      },
+      "type": "string"
+    },
+    "imageName": {
+      "allowedValues": [
+        "Good",
+        "Better",
+        "Best"
+      ],
+      "defaultValue": "Good",
+      "metadata": {
+        "description": "F5 SKU (IMAGE) to you want to deploy."
+      },
+      "type": "string"
+    },
+    "instanceName": {
+      "defaultValue": "f5vm01",
+      "metadata": {
+        "description": "Name of the Virtual Machine."
+      },
+      "type": "string"
+    },
+    "instanceType": {
+      "allowedValues": [
+        "Standard_A3",
+        "Standard_A4",
+        "Standard_A5",
+        "Standard_A6",
+        "Standard_A7",
+        "Standard_A8",
+        "Standard_A9",
+        "Standard_D3",
+        "Standard_D4",
+        "Standard_D11",
+        "Standard_D12",
+        "Standard_D13",
+        "Standard_D14",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D5_v2",
+        "Standard_D11_v2",
+        "Standard_D12_v2",
+        "Standard_D13_v2",
+        "Standard_D14_v2",
+        "Standard_D15_v2",
+        "Standard_F4",
+        "Standard_F8"
+      ],
+      "defaultValue": "Standard_D3_v2",
+      "metadata": {
+        "description": "Azure instance size of the Virtual Machine."
+      },
+      "type": "string"
+    },
+    "imageName": {
+      "allowedValues": [
+        "Good",
+        "Better",
+        "Best"
+      ],
+      "defaultValue": "Good",
+      "metadata": {
+        "description": "F5 SKU (IMAGE) to you want to deploy."
+      },
+      "type": "string"
+    },
     "bigIpVersion": {
       "allowedValues": [
         "latest",
@@ -145,8 +247,8 @@
     "location": "[resourceGroup().location]",
     "dnsLabel": "[toLower(parameters('dnsLabel'))]",
     "resourceLabel": "[toLower(parameters('resourceLabel'))]",
-    "publicIPAddressName": "[concat(variables('resourceLabel'), '-mgmt-pip')]",
-    "publicIPAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]",
+    "mgmtPublicIPAddressName": "[concat(variables('resourceLabel'), '-mgmt-pip')]",
+    "mgmtPublicIPAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('mgmtPublicIPAddressName'))]",
     "publicIPAddressType": "Static",
     "numberOfExternalIps": "[add(parameters('numberOfExternalIps'), 1)]",
     "publicIPAddressNamePrefix": "[concat(variables('resourceLabel'), '-ext-pip')]",
@@ -187,13 +289,22 @@
       }
     },
     "bigIpNicPortValue": "[variables('bigIpNicPortMap')['3'].Port]",
-    "bigIpMgmtPort": "[variables('bigIpVersionPortMap')[variables('bigIpNicPortValue')].Port]"
+    "bigIpMgmtPort": "[variables('bigIpVersionPortMap')[variables('bigIpNicPortValue')].Port]",
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+    "mgmtNsgID": "[resourceId('Microsoft.Network/networkSecurityGroups/',concat(variables('resourceLabel'), '-mgmt-nsg'))]",
+    "mgmtNicName": "[concat(variables('resourceLabel'), '-mgmt')]",
+    "mgmtSubnetId": "[concat(variables('vnetId'), '/subnets/', parameters('mgmtSubnetName'))]",
+    "mgmtSubnetAddress": "[first(split(parameters('mgmtSubnetPrefix'), '/'))]",
+    "mgmtSubnetAddressStart": "[last(variables('mgmtSubnetAddress'))]",
+    "mgmtSubnetAddress1": "[add(int(variables('mgmtSubnetAddressStart')),4)]",
+    "mgmtSubnetPrivateAddress": "[replace(variables('mgmtSubnetAddress'),variables('mgmtSubnetAddressStart'),string(variables('mgmtSubnetAddress1')))]",
+    "instanceName": "[toLower(parameters('instanceName'))]"
   },
   "resources": [
     {
       "apiVersion": "[variables('networkApiVersion')]",
       "location": "[variables('location')]",
-      "name": "[variables('publicIPAddressName')]",
+      "name": "[variables('mgmtPublicIPAddressName')]",
       "properties": {
         "dnsSettings": {
           "domainNameLabel": "[variables('dnsLabel')]"
@@ -324,6 +435,40 @@
           }
         ]
       }
+    },
+    {
+      //Need to make this two mgmt NICs, one for each instance of F5, what about the PIPs??
+      "apiVersion": "[variables('apiVersion')]",
+      "dependsOn": [
+        "[variables('vnetId')]",
+        "[variables('mgmtPublicIPAddressId')]",
+        "[variables('mgmtNsgID')]"
+      ],
+      "location": "[variables('location')]",
+      "name": "[variables('mgmtNicName')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "[concat(variables('instanceName'), '-ipconfig1')]",
+            "properties": {
+              "PublicIpAddress": {
+                "Id": "[variables('mgmtPublicIPAddressId')]"
+              },
+              "privateIPAddress": "[variables('mgmtSubnetPrivateAddress')]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[variables('mgmtSubnetId')]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[variables('mgmtNsgID')]"
+        }
+      },
+      "tags": {
+      },
+      "type": "Microsoft.Network/networkInterfaces"
     }
   ],
   "outputs": {}

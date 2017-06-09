@@ -49,6 +49,9 @@
     },
     "bigIpVersion": {
       "value": "13.0.021"
+    },
+    "instanceName": {
+      "value": "f5vm"
     }
   }
   }
