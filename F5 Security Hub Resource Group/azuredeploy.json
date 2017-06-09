@@ -117,8 +117,21 @@
       },
       "type": "string"
     },
-    "instanceName": {
-      "defaultValue": "f5vm01",
+    "numberOfInstances": {
+      "allowedValues": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of Virtual Machines."
+      },
+      "type": "int"
+    },
+    "instanceNamePrefix": {
+      "defaultValue": "f5vm",
       "metadata": {
         "description": "Name of the Virtual Machine."
       },
@@ -248,7 +261,7 @@
     "dnsLabel": "[toLower(parameters('dnsLabel'))]",
     "resourceLabel": "[toLower(parameters('resourceLabel'))]",
     "mgmtPublicIPAddressName": "[concat(variables('resourceLabel'), '-mgmt-pip')]",
-    "mgmtPublicIPAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('mgmtPublicIPAddressName'))]",
+    //"mgmtPublicIPAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('mgmtPublicIPAddressName'))]",
     "publicIPAddressType": "Static",
     "numberOfExternalIps": "[add(parameters('numberOfExternalIps'), 1)]",
     "publicIPAddressNamePrefix": "[concat(variables('resourceLabel'), '-ext-pip')]",
@@ -296,18 +309,22 @@
     "mgmtSubnetId": "[concat(variables('vnetId'), '/subnets/', parameters('mgmtSubnetName'))]",
     "mgmtSubnetAddress": "[first(split(parameters('mgmtSubnetPrefix'), '/'))]",
     "mgmtSubnetAddressStart": "[last(variables('mgmtSubnetAddress'))]",
-    "mgmtSubnetAddress1": "[add(int(variables('mgmtSubnetAddressStart')),4)]",
-    "mgmtSubnetPrivateAddress": "[replace(variables('mgmtSubnetAddress'),variables('mgmtSubnetAddressStart'),string(variables('mgmtSubnetAddress1')))]",
+    "mgmtSubnetAddress1": "[add(int(variables('mgmtSubnetAddressStart')),3)]",
+    //"mgmtSubnetPrivateAddress": "[replace(variables('mgmtSubnetAddress'),variables('mgmtSubnetAddressStart'),string(variables('mgmtSubnetAddress1')))]",
     "instanceName": "[toLower(parameters('instanceName'))]"
   },
   "resources": [
     {
       "apiVersion": "[variables('networkApiVersion')]",
+      "copy": {
+        "count": "[parameters('numberOfInstances')]",
+        "name": "mgmtpipcopy"
+      },
       "location": "[variables('location')]",
-      "name": "[variables('mgmtPublicIPAddressName')]",
+      "name": "[concat(variables('mgmtPublicIPAddressName'),copyIndex(1))]",
       "properties": {
         "dnsSettings": {
-          "domainNameLabel": "[variables('dnsLabel')]"
+          "domainNameLabel": "[concat(variables('dnsLabel'),copyIndex(1))]"
         },
         "idleTimeoutInMinutes": 30,
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]"
@@ -321,7 +338,7 @@
       "apiVersion": "[variables('networkApiVersion')]",
       "copy": {
         "count": "[variables('numberOfExternalIps')]",
-        "name": "pipcopy"
+        "name": "extpipcopy"
       },
       "location": "[variables('location')]",
       "name": "[concat(variables('publicIPAddressNamePrefix'), copyIndex(1))]",
@@ -394,7 +411,7 @@
       "apiVersion": "[variables('networkApiVersion')]",
       "dependsOn": [],
       "tags": {
-        "displayName": "Hub Vnet"
+        
       },
       "properties": {
         "addressSpace": {
@@ -437,24 +454,27 @@
       }
     },
     {
-      //Need to make this two mgmt NICs, one for each instance of F5, what about the PIPs??
       "apiVersion": "[variables('apiVersion')]",
       "dependsOn": [
         "[variables('vnetId')]",
-        "[variables('mgmtPublicIPAddressId')]",
+        "mgmtpipcopy",
         "[variables('mgmtNsgID')]"
       ],
+      "copy": {
+        "count": "[parameters('numberOfInstances')]",
+        "name": "mgmtniccopy"
+      },
       "location": "[variables('location')]",
-      "name": "[variables('mgmtNicName')]",
+      "name": "[concat(variables('mgmtNicName'),copyIndex(1))]",
       "properties": {
         "ipConfigurations": [
           {
-            "name": "[concat(variables('instanceName'), '-ipconfig1')]",
+            "name": "[concat(variables('instanceName'),copyIndex(1), '-ipconfig1')]",
             "properties": {
               "PublicIpAddress": {
-                "Id": "[variables('mgmtPublicIPAddressId')]"
+                "Id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('mgmtPublicIPAddressName'),copyIndex(1)))]"
               },
-              "privateIPAddress": "[variables('mgmtSubnetPrivateAddress')]",
+              "privateIPAddress": "[replace(variables('mgmtSubnetAddress'),variables('mgmtSubnetAddressStart'),string(add(variables('mgmtSubnetAddress1'),copyIndex(1))))]",
               "privateIPAllocationMethod": "Static",
               "subnet": {
                 "id": "[variables('mgmtSubnetId')]"
