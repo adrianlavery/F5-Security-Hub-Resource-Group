@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
@@ -78,81 +78,64 @@
         "description": "CIDR for the management subnet."
       },
       "type": "string"
-    },
-    "_artifactsLocation": {
-      "type": "string",
-      "metadata": {
-        "description": "The location of resources, such as templates and DSC modules, that the template depends on"
-      },
-      "defaultValue": "https://raw.githubusercontent.com/adrianlavery/F5-Security-Hub-Resource-Group/master/F5%20Security%20Hub%20Resource%20Group"
-    },
-    "_artifactsLocationSasToken": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Auto-generated token to access _artifactsLocation"
-      },
-      "defaultValue": ""
     }
 
   },
   "variables": {
-    "apiVersion": "2016-09-01",
-    "vnetTemplateUri": "[concat(parameters('_artifactsLocation'),'/nestedtemplates/vnet.json', parameters('_artifactsLocationSasToken'))]"
+    "networkApiVersion": "2016-09-01"
 
   },
   "resources": [
     {
-      "apiVersion": "[variables('apiVersion')]",
-      "type": "Microsoft.Resources/deployments",
-      "dependsOn": [],
-      "location": "[resourceGroup().location]",
       "name": "[parameters('vnetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[variables('networkApiVersion')]",
+      "dependsOn": [],
+      "tags": {
+
+      },
       "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('vnetTemplateUri')]",
-          "contentVersion": "1.0.0.0"
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnetCIDR')]"
+          ]
         },
-        "parameters": {
-          "virtualNetworkName": {
-            "value": "[parameters('vnetName')]"
+        "subnets": [
+          {
+            "name": "GatewaySubnet",
+            "properties": {
+              "addressPrefix": "[parameters('gatewaySubnetCIDR')]"
+            }
           },
-          "virtualNetworkAddressRange": {
-            "value": "[parameters('vnetCIDR')]"
+          {
+            "name": "[parameters('ShrdSvcSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('shrdSvcSubnetCIDR')]"
+            }
           },
-          "gatewaySubnetCIDR": {
-            "value": "[parameters('gatewaySubnetCIDR')]"
+          {
+            "name": "[parameters('extSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('extSubnetCIDR')]"
+            }
           },
-          "shrdSvcSubnetName": {
-            "value": "[parameters('shrdSvcSubnetName')]"
+          {
+            "name": "[parameters('intSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('intSubnetCIDR')]"
+            }
           },
-          "shrdSvcSubnetCIDR": {
-            "value": "[parameters('shrdSvcSubnetCIDR')]"
-          },
-          "extSubnetName": {
-            "value": "[parameters('extSubnetName')]"
-          },
-          "extSubnetCIDR": {
-            "value": "[parameters('extSubnetCIDR')]"
-          },
-          "intSubnetName": {
-            "value": "[parameters('intSubnetName')]"
-          },
-          "intSubnetCIDR": {
-            "value": "[parameters('intSubnetCIDR')]"
-          },
-          "mgmtSubnetName": {
-            "value": "[parameters('mgmtSubnetName')]"
-          },
-          "mgmtSubnetCIDR": {
-            "value": "[parameters('mgmtSubnetCIDR')]"
+          {
+            "name": "[parameters('mgmtSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('mgmtSubnetCIDR')]"
+            }
           }
-        }
+        ]
       }
     }
 
   ],
-  "outputs": {
-    
-  }
+  "outputs": {}
 }
