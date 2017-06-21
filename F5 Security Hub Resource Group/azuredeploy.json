@@ -79,6 +79,194 @@
       },
       "type": "string"
     },
+    "adminUsername": {
+      "defaultValue": "azureuser",
+      "metadata": {
+        "description": "User name for the Virtual Machine"
+      },
+      "type": "string"
+    },
+    "adminPassword": {
+      "metadata": {
+        "description": "Password to login to the Virtual Machine"
+      },
+      "type": "securestring"
+    },
+    "dnsLabel": {
+      "defaultValue": "REQUIRED",
+      "metadata": {
+        "description": "Unique DNS Name for the Public IP used to access the Virtual Machine"
+      },
+      "type": "string"
+    },
+    "instanceName": {
+      "defaultValue": "f5vm",
+      "metadata": {
+        "description": "Name of the VM"
+      },
+      "type": "string"
+    },
+    "instanceType": {
+      "allowedValues": [
+        "Standard_A2",
+        "Standard_A3",
+        "Standard_A4",
+        "Standard_A5",
+        "Standard_A6",
+        "Standard_A7",
+        "Standard_A8",
+        "Standard_A9",
+        "Standard_D3",
+        "Standard_D4",
+        "Standard_D11",
+        "Standard_D12",
+        "Standard_D13",
+        "Standard_D14",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D5_v2",
+        "Standard_D11_v2",
+        "Standard_D12_v2",
+        "Standard_D13_v2",
+        "Standard_D14_v2",
+        "Standard_D15_v2",
+        "Standard_F4",
+        "Standard_F8"
+      ],
+      "defaultValue": "Standard_D3_v2",
+      "metadata": {
+        "description": "Size of the VM"
+      },
+      "type": "string"
+    },
+    "imageName": {
+      "allowedValues": [
+        "Good",
+        "Better",
+        "Best"
+      ],
+      "defaultValue": "Good",
+      "metadata": {
+        "description": "F5 SKU(IMAGE) to Deploy"
+      },
+      "type": "string"
+    },
+    "bigIpVersion": {
+      "allowedValues": [
+        "latest",
+        "13.0.021",
+        "12.1.24"
+      ],
+      "defaultValue": "13.0.021",
+      "metadata": {
+        "description": "F5 BIG-IP Version to use"
+      },
+      "type": "string"
+    },
+    "licenseKey1": {
+      "defaultValue": "REQUIRED",
+      "metadata": {
+        "description": "The license token for the F5 BIG-IP(BYOL)"
+      },
+      "type": "string"
+    },
+    "licenseKey2": {
+      "defaultValue": "REQUIRED",
+      "metadata": {
+        "description": "The license token for the F5 BIG-IP(BYOL)"
+      },
+      "type": "string"
+    },
+    "numberOfExternalIps": {
+      "allowedValues": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "defaultValue": 1,
+      "metadata": {
+        "description": "The number of public/private IP's to deploy for the application traffic(external) nic on the BIG-IP to be used for virtual servers."
+      },
+      "type": "int"
+    },
+    "mgmtIpAddressRangeStart": {
+      "metadata": {
+        "description": "The static private IP address you would like to assign to the management self IP of the first BIG-IP. The next contiguous address will be used for the second BIG-IP device."
+      },
+      "type": "string"
+    },
+    "externalIpPrimaryAddressRangeStart": {
+      "metadata": {
+        "description": "The static private IP address you would like to assign to the external self IP (primary) of the first BIG-IP. The next contiguous address will be used for the second BIG-IP device."
+      },
+      "type": "string"
+    },
+    "externalIpSecondaryAddressRangeStart": {
+      "metadata": {
+        "description": "The static private IP address (secondary) you would like to assign to the first shared Azure public IP. An additional private IP address will be assigned for each public IP address you specified in numberOfExternalIps.  For example, inputting 10.100.1.50 here and choosing 2 in numberOfExternalIps would result in 10.100.1.50 and 10.100.1.51 being configured as static private IP addresses for external virtual servers."
+      },
+      "type": "string"
+    },
+    "internalIpAddressRangeStart": {
+      "metadata": {
+        "description": "The static private IP address you would like to assign to the internal self IP of the first BIG-IP. The next contiguous address will be used for the second BIG-IP device."
+      },
+      "type": "string"
+    },
+    "restrictedSrcAddress": {
+      "defaultValue": "*",
+      "metadata": {
+        "description": "Restricts management access to a specific network or address. Enter a IP address or address range in CIDR notation, or asterisk for all sources"
+      },
+      "type": "string"
+    },
+    "tenantId": {
+      "metadata": {
+        "description": "Your Azure service principal application tenant ID"
+      },
+      "type": "string"
+    },
+    "clientId": {
+      "metadata": {
+        "description": "Your Azure service principal application client ID"
+      },
+      "type": "string"
+    },
+    "servicePrincipalSecret": {
+      "metadata": {
+        "description": "Your Azure service principal application secret"
+      },
+      "type": "securestring"
+    },
+    "tagValues": {
+      "defaultValue": {
+        "application": "APP",
+        "cost": "COST",
+        "environment": "ENV",
+        "group": "GROUP",
+        "owner": "OWNER"
+      },
+      "type": "object"
+    },
+    "managedRoutes": {
+      "defaultValue": "NOT_SPECIFIED",
+      "metadata": {
+        "description": "A comma-delimited list of UDR destinations to be managed by this cluster."
+      },
+      "type": "string"
+    },
+    "routeTableTag": {
+      "defaultValue": "NOT_SPECIFIED",
+      "metadata": {
+        "description": "Azure tag to identify the route tables to be managed by this cluster."
+      },
+      "type": "string"
+    },
     "_artifactsLocation": {
       "type": "string",
       "metadata": {
@@ -97,15 +285,13 @@
   },
   "variables": {
     "apiVersion": "2016-09-01",
-    "vnetTemplateUri": "[concat(parameters('_artifactsLocation'),'/nestedtemplates/vnet.json', parameters('_artifactsLocationSasToken'))]"
-
+    "vnetTemplateUri": "[concat(parameters('_artifactsLocation'),'/nestedtemplates/vnet.json', parameters('_artifactsLocationSasToken'))]",
+    "f5TemplateUri": "[concat(parameters('_artifactsLocation'),'/nestedtemplates/f5ha.json', parameters('_artifactsLocationSasToken'))]"
   },
   "resources": [
     {
       "apiVersion": "[variables('apiVersion')]",
       "type": "Microsoft.Resources/deployments",
-      "dependsOn": [],
-      "location": "[resourceGroup().location]",
       "name": "[parameters('vnetName')]",
       "properties": {
         "mode": "Incremental",
@@ -114,10 +300,10 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "virtualNetworkName": {
+          "vnetName": {
             "value": "[parameters('vnetName')]"
           },
-          "virtualNetworkAddressRange": {
+          "vnetCIDR": {
             "value": "[parameters('vnetCIDR')]"
           },
           "gatewaySubnetCIDR": {
@@ -149,10 +335,104 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Resources/deployments",
+      "name": "F5Images",
+      "dependson": [
+        "[parameters('vnetName')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('f5TemplateUri')]",
+          "contentVersion": "3.1.0.0"
+        },
+        "parameters": {
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "dnsLabel": {
+            "value": "[parameters('dnsLabel')]"
+          },
+          "instanceName": {
+            "value": "[parameters('instanceName')]"
+          },
+          "instanceType": {
+            "value": "[parameters('instanceType')]"
+          },
+          "imageName": {
+            "value": "[parameters('imageName')]"
+          },
+          "bigIpVersion": {
+            "value": "[parameters('bigIpVersion')]"
+          },
+          "licenseKey1": {
+            "value": "[parameters('licenseKey1')]"
+          },
+          "licenseKey2": {
+            "value": "[parameters('licenseKey2')]"
+          },
+          "numberOfExternalIps": {
+            "value": "[parameters('numberOfExternalIps')]"
+          },
+          "vnetName": {
+            "value": "[parameters('vnetName')]"
+          },
+          "vnetResourceGroupName": {
+            "value": "[resourceGroup().name]"
+          },
+          "mgmtSubnetName": {
+            "value": "[parameters('mgmtSubnetName')]"
+          },
+          "mgmtIpAddressRangeStart": {
+            "value": "[parameters('mgmtIpAddressRangeStart')]"
+          },
+          "externalSubnetName": {
+            "value": "[parameters('extSubnetName')]"
+          },
+          "externalIpPrimaryAddressRangeStart": {
+            "value": "[parameters('externalIpPrimaryAddressRangeStart')]"
+          },
+          "externalIpSecondaryAddressRangeStart": {
+            "value": "[parameters('externalIpSecondaryAddressRangeStart')]"
+          },
+          "internalSubnetName": {
+            "value": "[parameters('intSubnetName')]"
+          },
+          "internalIpAddressRangeStart": {
+            "value": "[parameters('internalIpAddressRangeStart')]"
+          },
+          "restrictedSrcAddress": {
+            "value": "[parameters('restrictedSrcAddress')]"
+          },
+          "tenantId": {
+            "value": "[parameters('tenantId')]"
+          },
+          "clientId": {
+            "value": "[parameters('clientId')]"
+          },
+          "servicePrincipalSecret": {
+            "value": "[parameters('servicePrincipalSecret')]"
+          },
+          "tagValues": {
+            "value": "[parameters('tagValues')]"
+          },
+          "managedRoutes": {
+            "value": "[parameters('managedRoutes')]"
+          },
+          "routeTableTag": {
+            "value": "[parameters('routeTableTag')]"
+          }
+        }
+      }
     }
-
   ],
   "outputs": {
-    
+
   }
 }
