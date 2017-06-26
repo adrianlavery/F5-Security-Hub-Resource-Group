@@ -2,29 +2,20 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "adminPassword": {
-      "value": "Wednesday210617!"
-    },
     "dnsLabel": {
       "value": "wmsec"
     },
     "licenseKey1": {
-      "value": "KDVOL-BYPOB-VXBOW-EHQPR-BSFXARR"
+      "value": "HHXYH-OEPYS-AKVIK-YVSQY-ULDXSFJ"
     },
     "licenseKey2": {
-      "value": "IHEPK-KUDXC-OXMQS-KHHCH-PJPYYOI"
+      "value": "NQLEP-UIRIJ-LZBUB-UHQWR-ETOCUWM"
     },
     "mgmtIpAddressRangeStart": {
-      "value": "10.0.0.229"
-    },
-    "externalIpPrimaryAddressRangeStart": {
-      "value": "10.0.0.134"
-    },
-    "externalIpSecondaryAddressRangeStart": {
-      "value": "10.0.0.138"
+      "value": "10.113.128.196"
     },
     "internalIpAddressRangeStart": {
-      "value": "10.0.0.198"
+      "value": "10.113.128.228"
     },
     "tenantId": {
       "value": "72f988bf-86f1-41af-91ab-2d7cd011db47"
@@ -32,17 +23,56 @@
     "clientId": {
       "value": "e1910d39-8dbf-4647-bdf0-17e88d902817"
     },
-    "servicePrincipalSecret": {
-      "value": "becBWxHYZCV7hw1G7vWDEKWi3Do4UXrK6FVyWPZxOjU="
-    },
     "numberOfExternalIps": {
-      "value": 2
+      "value": 1
     },
     "managedRoutes": {
-      "value": "10.1.0.0/24,10.2.0.0/24"
+      "value": "10.200.0.0/24,10.201.0.0/24"
     },
     "routeTableTag": {
       "value": "F5EUW"
+    },
+    "vnetName": {
+      "value": "azu-hub-prd-euw-vnet01"
+    },
+    "vnetCIDR": {
+      "value": "10.113.128.0/24"
+    },
+    "gatewaySubnetCIDR": {
+      "value": "10.113.128.0/26"
+    },
+    "shrdSvcSubnetCIDR": {
+      "value": "10.113.128.64/26"
+    },
+    "extSubnetCIDR": {
+      "value": "10.113.128.128/26"
+    },
+    "intSubnetCIDR": {
+      "value": "10.113.128.224/27"
+    },
+    "mgmtSubnetCIDR": {
+      "value": "10.113.128.192/27"
+    },
+    "adminUsername": {
+      "value": "f5admin"
+    },
+    "instanceType": {
+      "value": "Standard_DS4_v2"
+    },
+    "imageName": {
+      "value": "Best"
+    },
+    "adminPassword": {
+      "value": "Monday260617!"
+    },
+    "externalIpSelfAddressRangeStart": {
+      "value": "10.113.128.134"
+    },
+    "externalIpAddressRangeStart": {
+      "value": "10.113.128.140"
+    },
+    "servicePrincipalSecret": {
+      "value": "KJK18Y+wkv+okcmu0rLaDlIjMY2nxurEJUXLjqdTfbA="
     }
     
   }
