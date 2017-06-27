@@ -318,7 +318,6 @@
   "variables": {
     "apiVersion": "2016-09-01",
     "vnetTemplateUri": "[concat(parameters('_artifactsLocation'),'/nestedtemplates/vnet.json', parameters('_artifactsLocationSasToken'))]",
-    //"f5TemplateUri": "[concat(parameters('_artifactsLocation'),'/nestedtemplates/f5ha.json', parameters('_artifactsLocationSasToken'))]"
     "f5TemplateUri": "https://raw.githubusercontent.com/F5Networks/f5-azure-arm-templates/master/supported/ha-avset/existing_stack/BYOL/azuredeploy.json"
   },
   "resources": [
