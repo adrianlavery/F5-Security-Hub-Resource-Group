@@ -31,8 +31,7 @@
       <Visible>False</Visible>
     </None>
     <Content Include="Deploy-AzureResourceGroup.ps1" />
-    <Content Include="nestedtemplates\vnet.json" />
-    <None Include="nestedtemplates\f5ha.json" />
+    <Content Include="nestedtemplates\hubVnet.json" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
   <ProjectExtensions>

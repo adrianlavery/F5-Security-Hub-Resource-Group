@@ -2,14 +2,14 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "vnetName": {
+    "hubVnetName": {
       "defaultValue": "HubVNet",
       "metadata": {
         "description": "Name of the hub VNet."
       },
       "type": "string"
     },
-    "vnetCIDR": {
+    "hubVnetCIDR": {
       "defaultValue": "10.0.0.0/24",
       "metadata": {
         "description": "CIDR for the hub VNET."
@@ -100,7 +100,7 @@
       "type": "string"
     },
     "instanceName": {
-      "defaultValue": "f5vm01",
+      "defaultValue": "f5vm",
       "metadata": {
         "description": "Name of the Virtual Machine."
       },
@@ -148,7 +148,7 @@
         "Standard_F4S",
         "Standard_F8S"
       ],
-      "defaultValue": "Standard_DS3_v2",
+      "defaultValue": "Standard_DS4_v2",
       "metadata": {
         "description": "Azure instance size of the Virtual Machine."
       },
@@ -160,7 +160,7 @@
         "Better",
         "Best"
       ],
-      "defaultValue": "Good",
+      "defaultValue": "Best",
       "metadata": {
         "description": "F5 SKU (IMAGE) to you want to deploy."
       },
@@ -317,26 +317,26 @@
   },
   "variables": {
     "apiVersion": "2016-09-01",
-    "vnetTemplateUri": "[concat(parameters('_artifactsLocation'),'/nestedtemplates/vnet.json', parameters('_artifactsLocationSasToken'))]",
+    "hubVnetTemplateUri": "[concat(parameters('_artifactsLocation'),'/nestedtemplates/hubVnet.json', parameters('_artifactsLocationSasToken'))]",
     "f5TemplateUri": "https://raw.githubusercontent.com/F5Networks/f5-azure-arm-templates/master/supported/ha-avset/existing_stack/BYOL/azuredeploy.json"
   },
   "resources": [
     {
       "apiVersion": "[variables('apiVersion')]",
       "type": "Microsoft.Resources/deployments",
-      "name": "[parameters('vnetName')]",
+      "name": "[parameters('hubVnetName')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('vnetTemplateUri')]",
+          "uri": "[variables('hubVnetTemplateUri')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
           "vnetName": {
-            "value": "[parameters('vnetName')]"
+            "value": "[parameters('hubVnetName')]"
           },
           "vnetCIDR": {
-            "value": "[parameters('vnetCIDR')]"
+            "value": "[parameters('hubVnetCIDR')]"
           },
           "gatewaySubnetCIDR": {
             "value": "[parameters('gatewaySubnetCIDR')]"
@@ -373,7 +373,7 @@
       "type": "Microsoft.Resources/deployments",
       "name": "F5Images",
       "dependson": [
-        "[parameters('vnetName')]"
+        "[parameters('hubVnetName')]"
       ],
       "properties": {
         "mode": "Incremental",
@@ -413,7 +413,7 @@
             "value": "[parameters('numberOfExternalIps')]"
           },
           "vnetName": {
-            "value": "[parameters('vnetName')]"
+            "value": "[parameters('hubVnetName')]"
           },
           "vnetResourceGroupName": {
             "value": "[resourceGroup().name]"
