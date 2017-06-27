@@ -304,7 +304,7 @@
       "metadata": {
         "description": "The location of resources, such as templates and DSC modules, that the template depends on"
       },
-      "defaultValue": "https://raw.githubusercontent.com/adrianlavery/F5-Security-Hub-Resource-Group/master/F5%20Security%20Hub%20Resource%20Group"
+      "defaultValue": "https://raw.githubusercontent.com/adrianlavery/F5-Security-Hub-Resource-Group/master/F5%20Security%20Hub%20Resource%20Group/"
     },
     "_artifactsLocationSasToken": {
       "type": "securestring",
@@ -318,7 +318,8 @@
   "variables": {
     "apiVersion": "2016-09-01",
     "vnetTemplateUri": "[concat(parameters('_artifactsLocation'),'/nestedtemplates/vnet.json', parameters('_artifactsLocationSasToken'))]",
-    "f5TemplateUri": "[concat(parameters('_artifactsLocation'),'/nestedtemplates/f5ha.json', parameters('_artifactsLocationSasToken'))]"
+    //"f5TemplateUri": "[concat(parameters('_artifactsLocation'),'/nestedtemplates/f5ha.json', parameters('_artifactsLocationSasToken'))]"
+    "f5TemplateUri": "https://raw.githubusercontent.com/F5Networks/f5-azure-arm-templates/master/supported/ha-avset/existing_stack/BYOL/azuredeploy.json"
   },
   "resources": [
     {
@@ -379,7 +380,7 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('f5TemplateUri')]",
-          "contentVersion": "3.1.0.0"
+          "contentVersion": "3.2.0.0"
         },
         "parameters": {
           "adminUsername": {
