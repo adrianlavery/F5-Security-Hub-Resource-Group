@@ -32,11 +32,13 @@
     </None>
     <Content Include="Deploy-AzureResourceGroup.ps1" />
     <Content Include="nested\hubvnet.json" />
+    <None Include="nested\vpngateway.json" />
+    <None Include="README.md" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties />
+      <UserProperties nested_4vpngateway_1json__JSONSchema="https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
