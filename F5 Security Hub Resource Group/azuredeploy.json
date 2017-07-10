@@ -452,7 +452,7 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('vpnTemplateUri')]",
-          "contentVersion": "3.2.0.0"
+          "contentVersion": "1.0.0.0"
         },
         "parameters": {
           "vpnType": {
@@ -488,107 +488,108 @@
         }
       }
     },
-          {
-            "apiVersion": "[variables('apiVersion')]",
-            "type": "Microsoft.Resources/deployments",
-            "name": "F5Images",
-            "dependson": [
-              "[parameters('hubVnetName')]"
-            ],
-            "properties": {
-              "mode": "Incremental",
-              "templateLink": {
-                "uri": "[variables('f5TemplateUri')]",
-                "contentVersion": "3.2.0.0"
-              },
-              "parameters": {
-                "adminUsername": {
-                  "value": "[parameters('adminUsername')]"
-                },
-                "adminPassword": {
-                  "value": "[parameters('adminPassword')]"
-                },
-                "dnsLabel": {
-                  "value": "[parameters('dnsLabel')]"
-                },
-                "instanceName": {
-                  "value": "[parameters('instanceName')]"
-                },
-                "instanceType": {
-                  "value": "[parameters('instanceType')]"
-                },
-                "imageName": {
-                  "value": "[parameters('imageName')]"
-                },
-                "bigIpVersion": {
-                  "value": "[parameters('bigIpVersion')]"
-                },
-                "licenseKey1": {
-                  "value": "[parameters('licenseKey1')]"
-                },
-                "licenseKey2": {
-                  "value": "[parameters('licenseKey2')]"
-                },
-                "numberOfExternalIps": {
-                  "value": "[parameters('numberOfExternalIps')]"
-                },
-                "vnetName": {
-                  "value": "[parameters('hubVnetName')]"
-                },
-                "vnetResourceGroupName": {
-                  "value": "[resourceGroup().name]"
-                },
-                "mgmtSubnetName": {
-                  "value": "[parameters('mgmtSubnetName')]"
-                },
-                "mgmtIpAddressRangeStart": {
-                  "value": "[parameters('mgmtIpAddressRangeStart')]"
-                },
-                "externalSubnetName": {
-                  "value": "[parameters('externalSubnetName')]"
-                },
-                "externalIpSelfAddressRangeStart": {
-                  "value": "[parameters('externalIpSelfAddressRangeStart')]"
-                },
-                "externalIpAddressRangeStart": {
-                  "value": "[parameters('externalIpAddressRangeStart')]"
-                },
-                "internalSubnetName": {
-                  "value": "[parameters('internalSubnetName')]"
-                },
-                "internalIpAddressRangeStart": {
-                  "value": "[parameters('internalIpAddressRangeStart')]"
-                },
-                "restrictedSrcAddress": {
-                  "value": "[parameters('restrictedSrcAddress')]"
-                },
-                "tenantId": {
-                  "value": "[parameters('tenantId')]"
-                },
-                "clientId": {
-                  "value": "[parameters('clientId')]"
-                },
-                "servicePrincipalSecret": {
-                  "value": "[parameters('servicePrincipalSecret')]"
-                },
-                "ntpServer": {
-                  "value": "[parameters('ntpServer')]"
-                },
-                "timeZone": {
-                  "value": "[parameters('timeZone')]"
-                },
-                "tagValues": {
-                  "value": "[parameters('tagValues')]"
-                },
-                "managedRoutes": {
-                  "value": "[parameters('managedRoutes')]"
-                },
-                "routeTableTag": {
-                  "value": "[parameters('routeTableTag')]"
-                }
-              }
-            }
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Resources/deployments",
+      "name": "F5Images",
+      "dependson": [
+        "[parameters('hubVnetName')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('f5TemplateUri')]",
+          "contentVersion": "3.2.1.0"
+        },
+        "parameters": {
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
           },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "dnsLabel": {
+            "value": "[parameters('dnsLabel')]"
+          },
+          "instanceName": {
+            "value": "[parameters('instanceName')]"
+          },
+          "instanceType": {
+            "value": "[parameters('instanceType')]"
+          },
+          "imageName": {
+            "value": "[parameters('imageName')]"
+          },
+          "bigIpVersion": {
+            "value": "[parameters('bigIpVersion')]"
+          },
+          "licenseKey1": {
+            "value": "[parameters('licenseKey1')]"
+          },
+          "licenseKey2": {
+            "value": "[parameters('licenseKey2')]"
+          },
+          "numberOfExternalIps": {
+            "value": "[parameters('numberOfExternalIps')]"
+          },
+          "vnetName": {
+            "value": "[parameters('hubVnetName')]"
+          },
+          "vnetResourceGroupName": {
+            "value": "[resourceGroup().name]"
+          },
+          "mgmtSubnetName": {
+            "value": "[parameters('mgmtSubnetName')]"
+          },
+          "mgmtIpAddressRangeStart": {
+            "value": "[parameters('mgmtIpAddressRangeStart')]"
+          },
+          "externalSubnetName": {
+            "value": "[parameters('externalSubnetName')]"
+          },
+          "externalIpSelfAddressRangeStart": {
+            "value": "[parameters('externalIpSelfAddressRangeStart')]"
+          },
+          "externalIpAddressRangeStart": {
+            "value": "[parameters('externalIpAddressRangeStart')]"
+          },
+          "internalSubnetName": {
+            "value": "[parameters('internalSubnetName')]"
+          },
+          "internalIpAddressRangeStart": {
+            "value": "[parameters('internalIpAddressRangeStart')]"
+          },
+          "restrictedSrcAddress": {
+            "value": "[parameters('restrictedSrcAddress')]"
+          },
+          "tenantId": {
+            "value": "[parameters('tenantId')]"
+          },
+          "clientId": {
+            "value": "[parameters('clientId')]"
+          },
+          "servicePrincipalSecret": {
+            "value": "[parameters('servicePrincipalSecret')]"
+          },
+          "ntpServer": {
+            "value": "[parameters('ntpServer')]"
+          },
+          "timeZone": {
+            "value": "[parameters('timeZone')]"
+          },
+          "tagValues": {
+            "value": "[parameters('tagValues')]"
+          },
+          "managedRoutes": {
+            "value": "[parameters('managedRoutes')]"
+          },
+          "routeTableTag": {
+            "value": "[parameters('routeTableTag')]"
+          }
+        }
+      }
+    }
+  ],
 
           "outputs": {
 
